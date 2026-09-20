@@ -20,9 +20,13 @@ enum layers {
 #define FKEYS    MO(_FUNCTION)
 #define ADJUST   MO(_ADJUST)
 
+// My keys actual meaning
+#define MKC_MINUS KC_SLSH
+
+// Special
 #define CTL_ESC  MT(MOD_LCTL, KC_ESC)
 #define CTL_QUOT MT(MOD_RCTL, KC_QUOTE)
-#define CTL_MINS MT(MOD_RCTL, KC_MINUS)
+#define CTL_MINS MT(MOD_RCTL, MKC_MINUS)
 #define ALT_ENT  MT(MOD_LALT, KC_ENT)
 
 // clang-format off
