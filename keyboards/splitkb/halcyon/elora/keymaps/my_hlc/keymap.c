@@ -1,6 +1,3 @@
-// Copyright 2024 splitkb.com (support@splitkb.com)
-// SPDX-License-Identifier: GPL-2.0-or-later
-
 #include QMK_KEYBOARD_H
 
 enum layers {
@@ -22,11 +19,20 @@ enum layers {
 
 // My keys actual meaning
 #define MKC_MINUS KC_SLSH
+#define MKC_AA KC_LBRC
+#define MKC_OE KC_QUOTE
+#define MKC_AE KC_SCLN
+
+enum custom_keycodes {
+    MKC_QUOTE = SAFE_RANGE,
+    MKC_PAREN,
+    MKC_BSPC
+};
 
 // Special
 #define CTL_ESC  MT(MOD_LCTL, KC_ESC)
 #define CTL_QUOT MT(MOD_RCTL, KC_QUOTE)
-#define CTL_MINS MT(MOD_RCTL, MKC_MINUS)
+#define CTL_MINS MT(MOD_RCTL, KC_MINUS)
 #define ALT_ENT  MT(MOD_LALT, KC_ENT)
 
 // clang-format off
@@ -50,10 +56,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
     [_DVORAK] = LAYOUT(
      _______  , _______ ,  _______   ,  _______  ,   _______,   _______,                                _______,   _______,   _______,   _______,  _______, _______ ,
-     KC_TAB  ,KC_QUOTE,KC_COMM,  KC_DOT,   KC_P ,   KC_Y ,                                        KC_F,   KC_G ,  KC_C ,   KC_R ,  KC_L , KC_BSPC,
+     KC_TAB  ,MKC_AE, MKC_OE, MKC_AA,   KC_P ,   KC_Y ,                                        KC_F,   KC_G ,  KC_C ,   KC_R ,  KC_L , MKC_BSPC,
      CTL_ESC , KC_A ,  KC_O   ,  KC_E  ,   KC_U ,   KC_I ,                                        KC_D,   KC_H ,  KC_T ,   KC_N ,  KC_S , CTL_MINS,
-     KC_LSFT ,KC_SCLN, KC_Q   ,  KC_J  ,   KC_K ,   KC_X , KC_LBRC,KC_CAPS,     FKEYS  , KC_RBRC, KC_B,   KC_M ,  KC_W ,   KC_V ,  KC_Z , KC_RSFT,
-                                 ADJUST, _______, KC_LGUI, KC_SPC , KC_ENT,     _______  , SYM    , _______,   _______, KC_APP // KC_APP is essentially a right click but triggerable via keyboard
+     KC_LSFT ,_______, KC_Q   ,  KC_J  ,   KC_K ,   KC_X , KC_LBRC,KC_CAPS,     FKEYS  , KC_RBRC, KC_B,   KC_M ,  KC_W ,   KC_V ,  KC_Z , KC_RSFT,
+                                 ADJUST, _______, KC_LGUI, KC_SPC , KC_ENT,     _______  , SYM    , KC_RGUI,   _______, KC_APP // KC_APP is essentially a right click but triggerable via keyboard
     ),
 
 /*
@@ -74,8 +80,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
     [_QWERTY] = LAYOUT(
      KC_ESC  , KC_1 ,  KC_2   ,  KC_3  ,   KC_4 ,   KC_5 ,                                        KC_6 ,  KC_7 ,  KC_8 ,   KC_9 ,  KC_0 , KC_BSPC,
-     KC_TAB  , KC_Q ,  KC_W   ,  KC_E  ,   KC_R ,   KC_T ,                                        KC_Y,   KC_U ,  KC_I ,   KC_O ,  KC_P , _______ , // The last should be å
-     CTL_ESC , KC_A ,  KC_S   ,  KC_D  ,   KC_F ,   KC_G ,                                        KC_H,   KC_J ,  KC_K ,   KC_L ,KC_SCLN,CTL_QUOT,
+     KC_TAB  , KC_Q ,  KC_W   ,  KC_E  ,   KC_R ,   KC_T ,                                        KC_Y,   KC_U ,  KC_I ,   KC_O ,  KC_P , MKC_AA , // The last should be å
+     CTL_ESC , KC_A ,  KC_S   ,  KC_D  ,   KC_F ,   KC_G ,                                        KC_H,   KC_J ,  KC_K ,   KC_L ,MKC_AE, MKC_OE,
      KC_LSFT , KC_Z ,  KC_X   ,  KC_C  ,   KC_V ,   KC_B , KC_LBRC,KC_CAPS,     FKEYS  , KC_RBRC, KC_N,   KC_M ,KC_COMM, KC_DOT ,KC_SLSH, KC_RSFT,
                                 ADJUST , KC_LGUI, ALT_ENT, KC_SPC , NAV   ,     SYM    , KC_SPC ,KC_RALT, KC_RGUI, KC_APP
     ),
@@ -234,3 +240,44 @@ const uint16_t right_halcyon_buttons[10][5] = {
     [_ADJUST] =     { _______, _______, _______, _______, _______ }
 };
 #endif
+
+void tap_key(uint16_t key) {
+    tap_code16(key);
+}
+
+bool key_with_shift(keyrecord_t* record, uint16_t key, bool key_is_shifted, uint16_t shift_key, bool shift_key_is_shifted) {
+    if (record->event.pressed) {
+        // If a shift key is currently held down
+        if (get_mods() & MOD_MASK_SHIFT) {
+            if (shift_key_is_shifted) {
+                tap_key(shift_key);
+            } else {
+                uint8_t current_mods = get_mods();
+                del_mods(MOD_MASK_SHIFT);
+                tap_key(shift_key);
+                set_mods(current_mods);
+            }
+        } else {
+            if (key_is_shifted) {
+                tap_key(S(key));
+            } else {
+                tap_key(key);
+            }
+        }
+    }
+    return false;
+}
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case MKC_BSPC:
+            return key_with_shift(record, KC_BSPC, false, KC_DEL, false);
+        case MKC_PAREN:
+            return key_with_shift(record, KC_8, true, KC_9, true);
+        case MKC_QUOTE:
+            return key_with_shift(record, KC_BSLS, false, KC_2, true);
+
+        default:
+            return true; // Let QMK handle all other keys normally
+    }
+}
