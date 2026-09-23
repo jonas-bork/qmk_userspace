@@ -5,6 +5,7 @@ enum layers {
     _QWERTY,
     _NAV,
     _SYM,
+    _NUM,
     _FUNCTION,
     _ADJUST,
 };
@@ -13,6 +14,7 @@ enum layers {
 #define DVORAK   DF(_DVORAK)
 
 #define SYM      MO(_SYM)
+#define NUM      MO(_NUM)
 #define NAV      MO(_NAV)
 #define FKEYS    MO(_FUNCTION)
 #define ADJUST   MO(_ADJUST)
@@ -22,13 +24,13 @@ enum layers {
 #define MKC_AA KC_LBRC
 #define MKC_OE KC_QUOTE
 #define MKC_AE KC_SCLN
+#define MKC_DOT_COL KC_DOT
+#define MKC_COM_SCL KC_COMMA
 
 enum custom_keycodes {
     MKC_QUOTE = SAFE_RANGE,
     MKC_PAREN,
     MKC_BSPC,
-    MKC_DOT_COL,
-    MKC_COM_SCL,
 };
 
 // Special
@@ -42,10 +44,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_DVORAK] = LAYOUT(
      _______, _______, _______, _______, _______, _______,                                      _______,   _______,   _______,   _______,  _______, _______ ,
-     KC_TAB , MKC_AE ,  MKC_OE ,  MKC_AA ,   KC_P   ,   KC_Y   ,                                KC_F   ,   KC_G ,  KC_C ,   KC_R ,  KC_L , MKC_BSPC,
-     CTL_ESC, KC_A   ,  KC_O   ,  KC_E  ,   KC_U ,   KC_I ,                                       KC_D   ,   KC_H ,  KC_T ,   KC_N ,  KC_S , CTL_MINS,
-     KC_LSFT, _______,  KC_Q   ,  KC_J  ,   KC_K ,   KC_X , KC_LBRC, KC_CAPS,  FKEYS   , KC_RBRC, KC_B   ,   KC_M ,  KC_W ,   KC_V ,  KC_Z , KC_RSFT,
-                                 ADJUST, _______, KC_LGUI, KC_SPC , KC_ENT ,  _______ , SYM    , KC_RGUI,   _______, KC_APP // KC_APP is essentially a right click but triggerable via keyboard
+     KC_TAB , MKC_QUOTE, MKC_COM_SCL, MKC_DOT_COL,   KC_P,   KC_Y   ,                                KC_F   ,   KC_G ,  KC_C ,   KC_R ,  KC_L , MKC_BSPC,
+     CTL_ESC, KC_A   ,  KC_O   ,  KC_E  ,   KC_U ,   KC_I,                                       KC_D   ,   KC_H ,  KC_T ,   KC_N ,  KC_S , CTL_MINS,
+     KC_LSFT, _______,  KC_Q   ,  KC_J  ,   KC_K ,   KC_X, _______, _______,  _______, _______, KC_B   ,   KC_M ,  KC_W ,   KC_V ,  KC_Z , KC_RSFT,
+                                 ADJUST, _______, KC_LGUI, KC_SPC , KC_ENT ,  NUM      , SYM    , KC_RGUI,   _______, KC_APP // KC_APP is essentially a right click but triggerable via keyboard
     ),
 
     [_QWERTY] = LAYOUT(
@@ -66,8 +68,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_SYM] = LAYOUT(
       _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
-      KC_GRV ,   KC_1 ,   KC_2 ,   KC_3 ,   KC_4 ,   KC_5 ,                                       KC_6 ,   KC_7 ,   KC_8 ,   KC_9 ,   KC_0 , KC_EQL ,
-      _______, _______, _______, MKC_COM_SCL, MKC_DOT_COL, _______,                                     _______, _______, _______, _______, _______, _______,
+      _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
+      _______, _______, MKC_AE , MKC_OE , MKC_AA , _______,                             _______, MKC_PAREN, _______, _______, _______, _______,
+      _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+                                 _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
+    ),
+
+    [_NUM] = LAYOUT(
+      _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
+      _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
+      _______,   KC_1 ,   KC_2 ,   KC_3 ,   KC_4 ,   KC_5 ,                                       KC_6 ,   KC_7 ,   KC_8 ,   KC_9 ,   KC_0 , _______,
       _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
                                  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
     ),
@@ -137,27 +147,27 @@ void tap_key(uint16_t key) {
     tap_code16(key);
 }
 
-bool key_with_shift(keyrecord_t* record, uint16_t key, bool key_is_shifted, uint16_t shift_key, bool shift_key_is_shifted) {
+bool process_custom_key(keyrecord_t* record, uint16_t normal_kc, uint16_t shift_kc) {
     if (record->event.pressed) {
-        // If a shift key is currently held down
-        if (get_mods() & MOD_MASK_SHIFT) {
-            if (shift_key_is_shifted) {
-                tap_key(shift_key);
-            } else {
-                uint8_t current_mods = get_mods();
-                del_mods(MOD_MASK_SHIFT);
-                register_code16(shift_key);
-                set_mods(current_mods);
-            }
-        } else {
-            if (key_is_shifted) {
-                register_code16(S(key));
-            } else {
-                register_code16(key);
-            }
+        uint8_t mods = get_mods();
+        uint8_t osm = get_oneshot_mods();
+        bool is_shifted = (mods | osm) & MOD_MASK_SHIFT;
+
+        uint16_t kc_to_register = is_shifted ? shift_kc : normal_kc;
+
+        del_mods(MOD_MASK_SHIFT);
+        // Consume oneshot shift mod if it was the cause of the shift being applied
+        if (osm & MOD_MASK_SHIFT) {
+            del_oneshot_mods(MOD_MASK_SHIFT);
         }
+
+        register_code16(kc_to_register);
+
+        // Restore mods
+        set_mods(mods);
     } else {
-        unregister_code16(key);
+        unregister_code16(normal_kc);
+        unregister_code16(shift_kc);
     }
 
     return false;
@@ -166,15 +176,11 @@ bool key_with_shift(keyrecord_t* record, uint16_t key, bool key_is_shifted, uint
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case MKC_BSPC:
-            return key_with_shift(record, KC_BSPC, false, KC_DEL, false);
+            return process_custom_key(record, KC_BSPC, KC_DEL);
         case MKC_PAREN:
-            return key_with_shift(record, KC_8, true, KC_9, true);
+            return process_custom_key(record, S(KC_8), S(KC_9));
         case MKC_QUOTE:
-            return key_with_shift(record, KC_BSLS, false, KC_2, true);
-        case MKC_DOT_COL:
-            return key_with_shift(record, KC_DOT, false, KC_SCLN, true);
-        case MKC_COM_SCL:
-            return key_with_shift(record, KC_COMMA, false, KC_SCLN, false);
+            return process_custom_key(record, KC_BSLS, S(KC_2));
 
         default:
             return true; // Let QMK handle all other keys normally
