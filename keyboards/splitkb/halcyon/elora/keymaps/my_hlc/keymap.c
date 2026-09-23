@@ -26,11 +26,16 @@ enum layers {
 #define MKC_AE KC_SCLN
 #define MKC_DOT_COL KC_DOT
 #define MKC_COM_SCL KC_COMMA
+#define MKC_QUES S(KC_MINUS)
+#define MKC_EXCL S(KC_1)
 
 enum custom_keycodes {
     MKC_QUOTE = SAFE_RANGE,
     MKC_PAREN,
     MKC_BSPC,
+    MKC_SQBR,
+    MKC_CUBR,
+    MKC_ANBR,
 };
 
 // Special
@@ -68,8 +73,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_SYM] = LAYOUT(
       _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
-      _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
-      _______, _______, MKC_AE , MKC_OE , MKC_AA , _______,                             _______, MKC_PAREN, _______, _______, _______, _______,
+      _______, _______, _______, _______, MKC_EXCL, _______,                                     _______, _______, _______, _______, _______, _______,
+      _______, _______, MKC_AE , MKC_OE , MKC_AA , MKC_QUES,                                     _______, MKC_PAREN, MKC_SQBR, MKC_CUBR, MKC_ANBR, _______,
       _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
                                  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
     ),
@@ -177,10 +182,16 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case MKC_BSPC:
             return process_custom_key(record, KC_BSPC, KC_DEL);
-        case MKC_PAREN:
-            return process_custom_key(record, S(KC_8), S(KC_9));
         case MKC_QUOTE:
             return process_custom_key(record, KC_BSLS, S(KC_2));
+        case MKC_PAREN:
+            return process_custom_key(record, S(KC_8), S(KC_9));
+        case MKC_SQBR:
+            return process_custom_key(record, ALGR(KC_8), ALGR(KC_9));
+        case MKC_CUBR:
+            return process_custom_key(record, ALGR(KC_7), ALGR(KC_0));
+        case MKC_ANBR:
+            return process_custom_key(record, KC_NUBS, S(KC_NUBS));
 
         default:
             return true; // Let QMK handle all other keys normally
