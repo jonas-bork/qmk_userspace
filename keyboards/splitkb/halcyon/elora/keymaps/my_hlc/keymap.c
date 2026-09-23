@@ -28,6 +28,13 @@ enum layers {
 #define MKC_COM_SCL KC_COMMA
 #define MKC_QUES S(KC_MINUS)
 #define MKC_EXCL S(KC_1)
+#define MKC_HASH S(KC_3)
+#define MKC_AT ALGR(KC_2)
+#define MKC_STAR S(KC_NUHS)
+#define MKC_PERC S(KC_5)
+#define MKC_AND S(KC_6)
+// Need currency signs (dollar, euro, pound)
+// Need pipe, plus and equals
 
 enum custom_keycodes {
     MKC_QUOTE = SAFE_RANGE,
@@ -36,6 +43,7 @@ enum custom_keycodes {
     MKC_SQBR,
     MKC_CUBR,
     MKC_ANBR,
+    MKC_SLSH,
 };
 
 // Special
@@ -73,8 +81,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_SYM] = LAYOUT(
       _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
-      _______, _______, _______, _______, MKC_EXCL, _______,                                     _______, _______, _______, _______, _______, _______,
-      _______, _______, MKC_AE , MKC_OE , MKC_AA , MKC_QUES,                                     _______, MKC_PAREN, MKC_SQBR, MKC_CUBR, MKC_ANBR, _______,
+      _______, _______, MKC_HASH, MKC_SLSH, MKC_EXCL, MKC_AND,                                     _______, MKC_STAR, MKC_PERC, _______, _______, _______,
+      _______, _______, MKC_AE , MKC_OE , MKC_AA , MKC_QUES,                                     MKC_AT, MKC_PAREN, MKC_SQBR, MKC_CUBR, MKC_ANBR, _______,
       _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
                                  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
     ),
@@ -192,6 +200,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             return process_custom_key(record, ALGR(KC_7), ALGR(KC_0));
         case MKC_ANBR:
             return process_custom_key(record, KC_NUBS, S(KC_NUBS));
+        case MKC_SLSH:
+            return process_custom_key(record, S(KC_7), ALGR(KC_NUBS));
 
         default:
             return true; // Let QMK handle all other keys normally
