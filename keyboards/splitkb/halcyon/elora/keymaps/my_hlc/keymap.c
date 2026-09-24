@@ -33,8 +33,13 @@ enum layers {
 #define MKC_STAR S(KC_NUHS)
 #define MKC_PERC S(KC_5)
 #define MKC_AND S(KC_6)
-// Need currency signs (dollar, euro, pound)
-// Need pipe, plus and equals
+#define MKC_PLUS KC_MINUS
+#define MKC_EQ S(KC_0)
+#define MKC_PIPE ALGR(KC_NUBS)
+#define MKC_DOLLAR ALGR(KC_4)
+#define MKC_EURO ALGR(KC_5)
+#define MKC_POUND ALGR(KC_3)
+// Need backtick
 
 enum custom_keycodes {
     MKC_QUOTE = SAFE_RANGE,
@@ -44,6 +49,7 @@ enum custom_keycodes {
     MKC_CUBR,
     MKC_ANBR,
     MKC_SLSH,
+    MKC_BKTK,
 };
 
 // Special
@@ -58,7 +64,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_DVORAK] = LAYOUT(
      _______, _______, _______, _______, _______, _______,                                      _______,   _______,   _______,   _______,  _______, _______ ,
      KC_TAB , MKC_QUOTE, MKC_COM_SCL, MKC_DOT_COL,   KC_P,   KC_Y   ,                                KC_F   ,   KC_G ,  KC_C ,   KC_R ,  KC_L , MKC_BSPC,
-     CTL_ESC, KC_A   ,  KC_O   ,  KC_E  ,   KC_U ,   KC_I,                                       KC_D   ,   KC_H ,  KC_T ,   KC_N ,  KC_S , CTL_MINS,
+     CTL_ESC, KC_A   ,  KC_O   ,  KC_E  ,   KC_U ,   KC_I,                                       KC_D   ,   KC_H ,  KC_T ,   KC_N ,  KC_S , KC_MCTL,
      KC_LSFT, _______,  KC_Q   ,  KC_J  ,   KC_K ,   KC_X, _______, _______,  _______, _______, KC_B   ,   KC_M ,  KC_W ,   KC_V ,  KC_Z , KC_RSFT,
                                  ADJUST, _______, KC_LGUI, KC_SPC , KC_ENT ,  NUM      , SYM    , KC_RGUI,   _______, KC_APP // KC_APP is essentially a right click but triggerable via keyboard
     ),
@@ -81,17 +87,17 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_SYM] = LAYOUT(
       _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
-      _______, _______, MKC_HASH, MKC_SLSH, MKC_EXCL, MKC_AND,                                     _______, MKC_STAR, MKC_PERC, _______, _______, _______,
-      _______, _______, MKC_AE , MKC_OE , MKC_AA , MKC_QUES,                                     MKC_AT, MKC_PAREN, MKC_SQBR, MKC_CUBR, MKC_ANBR, _______,
+      _______, _______, MKC_HASH, MKC_SLSH, MKC_EXCL, MKC_AND,                                  MKC_BKTK, MKC_STAR, MKC_PERC, MKC_EQ, MKC_PLUS, _______,
+      _______, MKC_AT , MKC_AE , MKC_OE , MKC_AA , MKC_QUES,                                    MKC_PIPE, MKC_PAREN, MKC_SQBR, MKC_CUBR, MKC_ANBR, _______,
       _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
                                  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
     ),
 
     [_NUM] = LAYOUT(
       _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
-      _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
+      _______, MKC_SLSH, MKC_STAR, MKC_MINUS, MKC_PLUS, _______,                                     _______, MKC_EQ, _______, _______, _______, _______,
       _______,   KC_1 ,   KC_2 ,   KC_3 ,   KC_4 ,   KC_5 ,                                       KC_6 ,   KC_7 ,   KC_8 ,   KC_9 ,   KC_0 , _______,
-      _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+      _______, _______, MKC_POUND, MKC_DOLLAR, MKC_EURO, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
                                  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
     ),
 
@@ -202,6 +208,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             return process_custom_key(record, KC_NUBS, S(KC_NUBS));
         case MKC_SLSH:
             return process_custom_key(record, S(KC_7), ALGR(KC_NUBS));
+        case MKC_BKTK:
+            // This is a back tick.
+            // Since back tick is a dead key on a Danish keyboard,
+            // you must press space afterwards to get the actualy key
+            if (record->event.pressed) {
+                tap_code16(S(KC_EQL));
+                tap_code(KC_SPC);
+            }
+            return false;
 
         default:
             return true; // Let QMK handle all other keys normally
