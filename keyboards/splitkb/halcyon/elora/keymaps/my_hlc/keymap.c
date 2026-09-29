@@ -6,6 +6,7 @@ enum layers {
     _NAV,
     _SYM,
     _NUM,
+    _SPECIAL,
     _FUNCTION,
     _ADJUST,
 };
@@ -14,6 +15,7 @@ enum layers {
 #define DVORAK   DF(_DVORAK)
 
 #define SYM      MO(_SYM)
+#define SPEC     MO(_SPECIAL)
 #define NUM      MO(_NUM)
 #define NAV      MO(_NAV)
 #define FKEYS    MO(_FUNCTION)
@@ -66,7 +68,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      KC_TAB , MKC_QUOTE, MKC_COM_SCL, MKC_DOT_COL,   KC_P,   KC_Y   ,                                KC_F   ,   KC_G ,  KC_C ,   KC_R ,  KC_L , MKC_BSPC,
      CTL_ESC, KC_A   ,  KC_O   ,  KC_E  ,   KC_U ,   KC_I,                                       KC_D   ,   KC_H ,  KC_T ,   KC_N ,  KC_S , KC_MCTL,
      KC_LSFT, MKC_MINUS,  KC_Q   ,  KC_J  ,   KC_K ,   KC_X, _______, _______,  _______, _______, KC_B   ,   KC_M ,  KC_W ,   KC_V ,  KC_Z , KC_RSFT,
-                                 ADJUST, _______, KC_LGUI, KC_SPC , KC_ENT ,  NUM      , SYM    , KC_RGUI,   _______, KC_APP // KC_APP is essentially a right click but triggerable via keyboard
+                                 ADJUST, SPEC, KC_LGUI, KC_SPC , KC_ENT ,  NUM      , SYM    , KC_RGUI,   _______, KC_APP // KC_APP is essentially a right click but triggerable via keyboard
     ),
 
     [_QWERTY] = LAYOUT(
@@ -98,6 +100,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       _______, MKC_SLSH, MKC_STAR, MKC_MINUS, MKC_PLUS, _______,                                     _______, MKC_EQ, _______, _______, _______, _______,
       _______,   KC_1 ,   KC_2 ,   KC_3 ,   KC_4 ,   KC_5 ,                                       KC_6 ,   KC_7 ,   KC_8 ,   KC_9 ,   KC_0 , _______,
       _______, _______, MKC_POUND, MKC_DOLLAR, MKC_EURO, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+                                 _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
+    ),
+
+    [_SPECIAL] = LAYOUT(
+      _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
+      _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, KC_RIGHT, _______,
+      _______, _______, _______, MS_BTN2, MS_BTN1, _______,                                     _______, KC_LEFT, _______, _______, _______, _______,
+      _______, _______, _______, KC_DOWN, KC_UP  , _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
                                  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
     ),
 
