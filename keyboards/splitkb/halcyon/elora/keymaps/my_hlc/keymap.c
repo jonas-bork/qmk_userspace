@@ -37,7 +37,7 @@ enum layers {
 #define MKC_AND S(KC_6)
 #define MKC_PLUS KC_MINUS
 #define MKC_EQ S(KC_0)
-#define MKC_PIPE ALGR(KC_NUBS)
+#define MKC_PIPE ALGR(KC_EQL)
 #define MKC_DOLLAR ALGR(KC_4)
 #define MKC_EURO ALGR(KC_5)
 #define MKC_POUND ALGR(KC_3)
@@ -52,6 +52,7 @@ enum custom_keycodes {
     MKC_ANBR,
     MKC_SLSH,
     MKC_BKTK,
+    MKC_TILDE,
 };
 
 // Special
@@ -91,7 +92,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
       _______, _______, MKC_HASH, MKC_SLSH, MKC_EXCL, MKC_AND,                                  MKC_BKTK, MKC_STAR, MKC_PERC, MKC_EQ, MKC_PLUS, _______,
       _______, MKC_AT , MKC_AE , MKC_OE , MKC_AA , MKC_QUES,                                    MKC_PIPE, MKC_PAREN, MKC_SQBR, MKC_CUBR, MKC_ANBR, _______,
-      _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+      _______, _______, _______, _______, _______, MKC_TILDE, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
                                  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
     ),
 
@@ -224,6 +225,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             // you must press space afterwards to get the actualy key
             if (record->event.pressed) {
                 tap_code16(S(KC_EQL));
+                tap_code(KC_SPC);
+            }
+            return false;
+        case MKC_TILDE:
+            // This is a tilde.
+            // Since back tick is a dead key on a Danish keyboard,
+            // you must press space afterwards to get the actualy key
+            if (record->event.pressed) {
+                tap_code16(ALGR(KC_RBRC));
                 tap_code(KC_SPC);
             }
             return false;
