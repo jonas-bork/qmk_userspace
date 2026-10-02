@@ -67,7 +67,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_DVORAK] = LAYOUT(
      _______, _______, _______, _______, _______, _______,                                      _______,   _______,   _______,   _______,  _______, _______ ,
      KC_TAB , MKC_QUOTE, MKC_COM_SCL, MKC_DOT_COL,   KC_P,   KC_Y   ,                                KC_F   ,   KC_G ,  KC_C ,   KC_R ,  KC_L , MKC_BSPC,
-     CTL_ESC, KC_A   ,  KC_O   ,  KC_E  ,   KC_U ,   KC_I,                                       KC_D   ,   KC_H ,  KC_T ,   KC_N ,  KC_S , KC_MCTL,
+     CTL_ESC, KC_A   ,  KC_O   ,  KC_E  ,   KC_U ,   KC_I,                                       KC_D   ,   KC_H ,  KC_T ,   KC_N ,  KC_S , KC_RCTL,
      KC_LSFT, MKC_MINUS,  KC_Q   ,  KC_J  ,   KC_K ,   KC_X, _______, _______,  _______, _______, KC_B   ,   KC_M ,  KC_W ,   KC_V ,  KC_Z , KC_RSFT,
                                  ADJUST, SPEC, KC_LGUI, KC_SPC , KC_ENT ,  NUM      , SYM    , KC_RGUI,   _______, KC_APP // KC_APP is essentially a right click but triggerable via keyboard
     ),
